@@ -64,11 +64,6 @@ instance (Num a) => Num (Tensor Z Nil a) where
   fromInteger = Scalar . fromInteger
   
 
-||| Fold without seeding the accumulator
-foldr1 : (t -> t -> t) -> Vect (S n) t -> t
-foldr1 f (x::xs) = foldr f x xs
-
-
 --dotProduct : (Num a) => Vec n a -> Vec n a -> a
 --dotProduct (Vector as) (Vector bs) = foldr1 (+) $ zipWith (*) as bs
 
