@@ -2,7 +2,7 @@ module Tensor
 
 
 -- this data type provides more machinery than most of this library actually needs
--- the data type allows for n-dimensional arrays
+-- it allows for n-dimensional arrays
 -- this library mostly deals with plain old vectors and matrices
 data Tensor : (dim : Nat) -> Vect dim Nat -> Type -> Type where
   Scalar : a -> Tensor 0 Nil a
