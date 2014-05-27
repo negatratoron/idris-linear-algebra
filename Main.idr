@@ -38,4 +38,5 @@ example2 = Vector [Vector [zero, four, two]
 
 
 main : IO ()
-main = putStrLn (show (transpose example2))
+--main = putStrLn (show (transpose example2))
+main = putStrLn (show (Vect.foldr1 (+) (the (Vect 3 Int) [0, 4, 2])))

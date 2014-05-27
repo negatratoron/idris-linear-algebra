@@ -43,13 +43,11 @@ instance (Show a) => Show (Tensor dim ds a) where
   show (Vector v) = show v
 
 
-
-
-
 transpose : Matrix a b t -> Matrix b a t
 transpose {b} (Vector Nil) = Vector $ replicate b (Vector Nil)
 transpose (Vector ((Vector v)::vs)) = let (Vector os) = transpose (Vector vs) in
   Vector (zipWith consT v os)
+
 
 (+) : (Num a) => Tensor dim ds a -> Tensor dim ds a -> Tensor dim ds a
 (+) (Scalar a) (Scalar b) = Scalar (a + b)
@@ -64,8 +62,14 @@ instance (Num a) => Num (Tensor Z Nil a) where
   fromInteger = Scalar . fromInteger
   
 
---dotProduct : (Num a) => Vec n a -> Vec n a -> a
---dotProduct (Vector as) (Vector bs) = foldr1 (+) $ zipWith (*) as bs
+zipWith : (a -> b -> c) -> Tensor dim ds a -> Tensor dim ds b -> Tensor dim ds c
+zipWith f (Scalar a) (Scalar b) = Scalar (f a b)
+zipWith f (Vector a) (Vector b) = Vector $ zipWith (zipWith f) a b
+
+
+dotProduct : (Num a) => Vec (S n) a -> Vec (S n) a -> Tensor Z Nil a
+dotProduct a b = let (Vector vs) = zipWith (*) a b in
+  foldr1 Tensor.(+) vs
 
 --crossProduct : (Num a) => Vec 3 a -> Vec 3 a -> Vec 3 a
 
