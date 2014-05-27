@@ -4,6 +4,7 @@ module Tensor
 -- this data type provides more machinery than most of this library actually needs
 -- it allows for n-dimensional arrays
 -- this library mostly deals with plain old vectors and matrices
+
 data Tensor : (dim : Nat) -> Vect dim Nat -> Type -> Type where
   Scalar : a -> Tensor 0 Nil a
   Vector : Vect d (Tensor dim ds a) -> Tensor (S dim) (d::ds) a
@@ -18,9 +19,11 @@ Matrix cols rows = Tensor 2 [cols, rows]
 SquareMatrix : Nat -> Type -> Type
 SquareMatrix m = Tensor 2 [m, m]
 
+
 -- consT pushes a tensor onto the front of another tensor
 -- the tensors' dimensions must differ by 1
 -- (too bad this method can't be used to pattern match on tensors)
+
 consT : (Tensor dim ds a) ->
         (Tensor (S dim) (d::ds) a) ->
         (Tensor (S dim) ((S d)::ds) a)
@@ -30,7 +33,6 @@ consT t (Vector ts) = Vector (t::ts)
 instance Functor (Tensor dim ds) where
   map f (Scalar a) = Scalar (f a)
   map f (Vector v) = Vector (map (map f) v)
-
 
 instance (Eq a) => Eq (Tensor dim ds a) where
   (Scalar a) == (Scalar b) = a == b
