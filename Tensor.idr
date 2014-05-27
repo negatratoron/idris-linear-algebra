@@ -90,9 +90,3 @@ crossProduct2 a b = let Vector [x, y, z] = crossProduct (consT 0 a) (consT 0 b) 
 multVector : (Num a) => Matrix (S m) (S n) a -> Vec (S n) a -> Vec (S m) a
 multVector (Vector vs) v = Vector (map (dotProduct v) vs)
 
-
---multMatrix : Matrix n o -> Matrix m n -> Matrix m o
---multMatrix 
-
-
-
