@@ -71,11 +71,20 @@ dotProduct : (Num a) => Vec (S n) a -> Vec (S n) a -> Tensor Z Nil a
 dotProduct a b = let (Vector vs) = zipWith (*) a b in
   foldr1 Tensor.(+) vs
 
---crossProduct : (Num a) => Vec 3 a -> Vec 3 a -> Vec 3 a
 
---crossProduct2 = (Num a) => Vec 2 a -> Vec 2 a -> a
+-- would be cool to implement this in terms of wedge product
+-- instead of brute forcing it term by term
+crossProduct : (Num a) => Vec 3 a -> Vec 3 a -> Vec 3 a
+crossProduct (Vector [a1, a2, a3]) (Vector [b1, b2, b3]) =
+  Vector ([a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - b1*a2])
+
+
+crossProduct2 : (Num a) => Vec 2 a -> Vec 2 a -> Tensor Z Nil a
+crossProduct2 a b = let Vector [x, y, z] = crossProduct (consT 0 a) (consT 0 b) in z
+
 
 --multVector : Matrix m n -> Vec m -> Vec n
+
 
 --multMatrix : Matrix n o -> Matrix m n -> Matrix m o
 --multMatrix 
