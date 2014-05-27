@@ -12,9 +12,12 @@ data Tensor : (dim : Nat) -> Vect dim Nat -> Type -> Type where
 Vec : Nat -> Type -> Type
 Vec m = Tensor 1 [m]
 
--- Matrix column-length row-length
+-- Matrix cols rows
 Matrix : Nat -> Nat -> Type -> Type
-Matrix m n = Tensor 2 [n, m]
+Matrix m n = Tensor 2 [m, n]
+
+SquareMatrix : Nat -> Type -> Type
+SquareMatrix m = Tensor 2 [m, m]
 
 -- consT pushes a tensor onto the front of another tensor
 -- the tensors' dimensions must differ by 1
@@ -43,7 +46,7 @@ instance (Show a) => Show (Tensor dim ds a) where
   show (Vector v) = show v
 
 
-transpose : Matrix b a t -> Matrix a b t
+transpose : Matrix a b t -> Matrix b a t
 transpose {b} (Vector Nil) = Vector $ replicate b (Vector Nil)
 transpose (Vector ((Vector v)::vs)) = let (Vector os) = transpose (Vector vs) in
   Vector (zipWith consT v os)
@@ -83,15 +86,12 @@ crossProduct2 : (Num a) => Vec 2 a -> Vec 2 a -> Tensor Z Nil a
 crossProduct2 a b = let Vector [x, y, z] = crossProduct (consT 0 a) (consT 0 b) in z
 
 
-multVector : (Num a) => Matrix (S m) (S n) a -> Vec (S m) a -> Vec (S n) a
+multVector : (Num a) => Matrix (S m) (S n) a -> Vec (S n) a -> Vec (S m) a
 multVector (Vector vs) v = Vector (map (dotProduct v) vs)
 
 
 --multMatrix : Matrix n o -> Matrix m n -> Matrix m o
 --multMatrix 
 
-
-SquareMatrix : Nat -> Type -> Type
-SquareMatrix m = Tensor 2 [m, m]
 
 
