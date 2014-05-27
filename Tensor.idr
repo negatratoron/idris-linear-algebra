@@ -76,7 +76,7 @@ dotProduct a b = let (Vector vs) = zipWith (*) a b in
   foldr1 Tensor.(+) vs
 
 
--- it would be cool to implement this in terms of wedge product
+-- it would be cool to implement cross product in terms of wedge product
 -- instead of brute forcing it term by term
 
 crossProduct : (Num a) => Vec 3 a -> Vec 3 a -> Vec 3 a
