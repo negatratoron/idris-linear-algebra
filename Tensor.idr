@@ -8,13 +8,12 @@ data Tensor : (dim : Nat) -> Vect dim Nat -> Type -> Type where
   Scalar : a -> Tensor 0 Nil a
   Vector : Vect d (Tensor dim ds a) -> Tensor (S dim) (d::ds) a
 
--- column vector
-Vec : Nat -> Type -> Type
-Vec m = Tensor 1 [m]
 
--- Matrix cols rows
+Vec : Nat -> Type -> Type
+Vec rows = Tensor 1 [rows]
+
 Matrix : Nat -> Nat -> Type -> Type
-Matrix m n = Tensor 2 [m, n]
+Matrix cols rows = Tensor 2 [cols, rows]
 
 SquareMatrix : Nat -> Type -> Type
 SquareMatrix m = Tensor 2 [m, m]
