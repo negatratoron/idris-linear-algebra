@@ -88,6 +88,9 @@ crossProduct2 : (Num a) => Vec 2 a -> Vec 2 a -> Tensor Z Nil a
 crossProduct2 a b = let Vector [x, y, z] = crossProduct (consT 0 a) (consT 0 b) in z
 
 
-multVector : (Num a) => Matrix (S m) (S n) a -> Vec (S n) a -> Vec (S m) a
-multVector (Vector vs) v = Vector (map (dotProduct v) vs)
+multVec : (Num a) => Matrix (S m) (S n) a -> Vec (S n) a -> Vec (S m) a
+multVec (Vector vs) v = Vector (map (dotProduct v) vs)
+
+multMatrix : (Num a) => Matrix (S n) (S o) a -> Matrix (S m) (S n) a -> Matrix (S m) (S o) a
+multMatrix a (Vector bCols) = Vector $ map (multVec (transpose a)) bCols
 
