@@ -18,8 +18,8 @@ data Tensor : (dim : Nat) -> Vect dim Nat -> Type -> Type where
 Scalar : Type -> Type
 Scalar = Tensor Z Nil
 
-Vec : Nat -> Type -> Type
-Vec rows = Tensor 1 [rows]
+Vector : Nat -> Type -> Type
+Vector rows = Tensor 1 [rows]
 
 Matrix : Nat -> Nat -> Type -> Type
 Matrix rows cols = Tensor 2 [rows, cols]
@@ -86,19 +86,19 @@ zipWith f (MkVector a) (MkVector b) = MkVector $ zipWith (zipWith f) a b
 -- Mathematical operations
 --------------------------------------------------------------------------------
   
-dotProduct : (Num a) => Vec (S n) a -> Vec (S n) a -> Tensor Z Nil a
+dotProduct : (Num a) => Vector (S n) a -> Vector (S n) a -> Tensor Z Nil a
 dotProduct a b = let (MkVector vs) = zipWith (*) a b in
   foldr1 Tensor.(+) vs
 
 
 -- it would be cool to implement cross product in terms of wedge product
 -- instead of brute forcing it term by term
-crossProduct : (Num a) => Vec 3 a -> Vec 3 a -> Vec 3 a
+crossProduct : (Num a) => Vector 3 a -> Vector 3 a -> Vector 3 a
 crossProduct (MkVector [a1, a2, a3]) (MkVector [b1, b2, b3]) =
   MkVector ([a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - b1*a2])
 
 
-crossProduct2 : (Num a) => Vec 2 a -> Vec 2 a -> Tensor Z Nil a
+crossProduct2 : (Num a) => Vector 2 a -> Vector 2 a -> Tensor Z Nil a
 crossProduct2 a b = let MkVector [x, y, z] = crossProduct (consT 0 a) (consT 0 b) in z
 
 
@@ -109,11 +109,11 @@ transpose (MkVector ((MkVector v)::vs)) = let (MkVector os) = transpose (MkVecto
 
 
 -- multiplies a matrix by a vector
-multVec : (Num a) => Matrix (S m) (S n) a -> Vec (S n) a -> Vec (S m) a
-multVec (MkVector vs) v = MkVector (map (dotProduct v) vs)
+multVector : (Num a) => Matrix (S m) (S n) a -> Vector (S n) a -> Vector (S m) a
+multVector (MkVector vs) v = MkVector (map (dotProduct v) vs)
 
 
 -- matrix multiplication
 multMatrix : (Num a) => Matrix (S n) (S o) a -> Matrix (S m) (S n) a -> Matrix (S m) (S o) a
-multMatrix a (MkVector bCols) = MkVector $ map (multVec (transpose a)) bCols
+multMatrix a (MkVector bCols) = MkVector $ map (multVector (transpose a)) bCols
 
