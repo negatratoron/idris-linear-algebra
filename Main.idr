@@ -2,21 +2,29 @@ import Tensor
 import Tensor2
 
 
+-- looks like a row vector, actually a column vector
 vector : Vec 3 Int
 vector = Vector [0, 4, 2]
 
--- 3 cols, 3 rows
--- the literal notation is crooked, which is very bad
-matrix : Matrix 3 3 Int
-matrix = Vector [Vector [0, 4, 3]
-                ,Vector [1, 3, 8]
-                ,Vector [8, 2, 1]
-                ]
 
 vector2 : Vec 3 Int
-vector2 = multVec matrix vector
+vector2 = Vector [2, 4, 1]
+
+
+product : scalar Int
+product = dotProduct vector vector2
+
+
+matrix : Matrix 3 2 Int
+matrix = Vector [Vector [0, 4, 3]
+                ,Vector [1, 3, 8]
+                ]
+
+vector3 : Vec 2 Int
+vector3 = multVec matrix vector
 
 
 
 main : IO ()
-main = let (Vector v) = vector2 in putStrLn (show v)
+--main = putStrLn $ show Main.product
+main = let (Vector v) = vector3 in putStrLn (show v)

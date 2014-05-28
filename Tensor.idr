@@ -10,11 +10,15 @@ data Tensor : (dim : Nat) -> Vect dim Nat -> Type -> Type where
   Vector : Vect d (Tensor dim ds a) -> Tensor (S dim) (d::ds) a
 
 
+-- must find a name for this function that's not a hack
+scalar : Type -> Type
+scalar = Tensor Z Nil
+
 Vec : Nat -> Type -> Type
 Vec rows = Tensor 1 [rows]
 
 Matrix : Nat -> Nat -> Type -> Type
-Matrix cols rows = Tensor 2 [cols, rows]
+Matrix cols rows = Tensor 2 [rows, cols]
 
 SquareMatrix : Nat -> Type -> Type
 SquareMatrix m = Tensor 2 [m, m]
@@ -47,7 +51,7 @@ instance (Show a) => Show (Tensor dim ds a) where
   show (Vector v) = show v
 
 
-transpose : Matrix a b t -> Matrix b a t
+transpose : Matrix b a t -> Matrix a b t
 transpose {b} (Vector Nil) = Vector $ replicate b (Vector Nil)
 transpose (Vector ((Vector v)::vs)) = let (Vector os) = transpose (Vector vs) in
   Vector (zipWith consT v os)
@@ -88,9 +92,10 @@ crossProduct2 : (Num a) => Vec 2 a -> Vec 2 a -> Tensor Z Nil a
 crossProduct2 a b = let Vector [x, y, z] = crossProduct (consT 0 a) (consT 0 b) in z
 
 
-multVec : (Num a) => Matrix (S m) (S n) a -> Vec (S n) a -> Vec (S m) a
+multVec : (Num a) => Matrix (S m) (S n) a -> Vec (S m) a -> Vec (S n) a
 multVec (Vector vs) v = Vector (map (dotProduct v) vs)
 
-multMatrix : (Num a) => Matrix (S n) (S o) a -> Matrix (S m) (S n) a -> Matrix (S m) (S o) a
+
+multMatrix : (Num a) => Matrix (S m) (S n) a -> Matrix (S n) (S o) a -> Matrix (S m) (S o) a
 multMatrix a (Vector bCols) = Vector $ map (multVec (transpose a)) bCols
 
