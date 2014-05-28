@@ -4,98 +4,116 @@ module Tensor
 -- this data type provides more machinery than most of this library actually needs
 -- it allows for n-dimensional arrays
 -- this library mostly deals with plain old vectors and matrices
+-- a danger is that this machinery turns out poor for higher-dimensional use cases
 
 data Tensor : (dim : Nat) -> Vect dim Nat -> Type -> Type where
-  Scalar : a -> Tensor 0 Nil a
-  Vector : Vect d (Tensor dim ds a) -> Tensor (S dim) (d::ds) a
+  MkScalar : a -> Tensor 0 Nil a
+  MkVector : Vect d (Tensor dim ds a) -> Tensor (S dim) (d::ds) a
 
 
--- must find a name for this function that's not a hack
-scalar : Type -> Type
-scalar = Tensor Z Nil
+--------------------------------------------------------------------------------
+-- More Tensor type constructors
+--------------------------------------------------------------------------------
+
+Scalar : Type -> Type
+Scalar = Tensor Z Nil
 
 Vec : Nat -> Type -> Type
 Vec rows = Tensor 1 [rows]
 
 Matrix : Nat -> Nat -> Type -> Type
-Matrix cols rows = Tensor 2 [rows, cols]
+Matrix rows cols = Tensor 2 [rows, cols]
 
 SquareMatrix : Nat -> Type -> Type
 SquareMatrix m = Tensor 2 [m, m]
 
 
--- consT pushes a tensor onto the front of another tensor
--- the tensors' dimensions must differ by 1
--- (too bad this method can't be used to pattern match on tensors)
+--------------------------------------------------------------------------------
+-- More Tensor constructors
+--------------------------------------------------------------------------------
 
 consT : (Tensor dim ds a) ->
         (Tensor (S dim) (d::ds) a) ->
         (Tensor (S dim) ((S d)::ds) a)
-consT t (Vector ts) = Vector (t::ts)
+consT t (MkVector ts) = MkVector (t::ts)
 
+
+--------------------------------------------------------------------------------
+-- Instances
+--------------------------------------------------------------------------------
 
 instance Functor (Tensor dim ds) where
-  map f (Scalar a) = Scalar (f a)
-  map f (Vector v) = Vector (map (map f) v)
+  map f (MkScalar a) = MkScalar (f a)
+  map f (MkVector v) = MkVector (map (map f) v)
 
 instance (Eq a) => Eq (Tensor dim ds a) where
-  (Scalar a) == (Scalar b) = a == b
-  (Vector a) == (Vector b) = a == b
+  (MkScalar a) == (MkScalar b) = a == b
+  (MkVector a) == (MkVector b) = a == b
 
 instance Foldable (Tensor dim ds) where
-  foldr f e (Scalar a) = f a e
-  foldr f e (Vector v) = foldr (flip (foldr f)) e v
+  foldr f e (MkScalar a) = f a e
+  foldr f e (MkVector v) = foldr (flip (foldr f)) e v
 
 instance (Show a) => Show (Tensor dim ds a) where
-  show (Scalar a) = show a
-  show (Vector v) = show v
+  show (MkScalar a) = show a
+  show (MkVector v) = show v
 
 
-transpose : Matrix b a t -> Matrix a b t
-transpose {b} (Vector Nil) = Vector $ replicate b (Vector Nil)
-transpose (Vector ((Vector v)::vs)) = let (Vector os) = transpose (Vector vs) in
-  Vector (zipWith consT v os)
-
-
+-- currently Num only applies to Scalars
+-- not sure if multiplication fits
 (+) : (Num a) => Tensor dim ds a -> Tensor dim ds a -> Tensor dim ds a
-(+) (Scalar a) (Scalar b) = Scalar (a + b)
-(+) (Vector a) (Vector b) = Vector (zipWith Tensor.(+) a b)
-
+(+) (MkScalar a) (MkScalar b) = MkScalar (a + b)
+(+) (MkVector a) (MkVector b) = MkVector (zipWith Tensor.(+) a b)
 
 instance (Num a) => Num (Tensor Z Nil a) where
   (+) = Tensor.(+)
-  (Scalar a) * (Scalar b) = Scalar (a * b)
-  (Scalar a) - (Scalar b) = Scalar (a - b)
-  abs (Scalar a) = Scalar (abs a)
-  fromInteger = Scalar . fromInteger
-  
+  (MkScalar a) * (MkScalar b) = MkScalar (a * b)
+  (MkScalar a) - (MkScalar b) = MkScalar (a - b)
+  abs (MkScalar a) = MkScalar (abs a)
+  fromInteger = MkScalar . fromInteger
+
+
+--------------------------------------------------------------------------------
+-- Zips, Folds, Flips, and Flops
+--------------------------------------------------------------------------------
 
 zipWith : (a -> b -> c) -> Tensor dim ds a -> Tensor dim ds b -> Tensor dim ds c
-zipWith f (Scalar a) (Scalar b) = Scalar (f a b)
-zipWith f (Vector a) (Vector b) = Vector $ zipWith (zipWith f) a b
+zipWith f (MkScalar a) (MkScalar b) = MkScalar (f a b)
+zipWith f (MkVector a) (MkVector b) = MkVector $ zipWith (zipWith f) a b
 
 
+--------------------------------------------------------------------------------
+-- Mathematical operations
+--------------------------------------------------------------------------------
+  
 dotProduct : (Num a) => Vec (S n) a -> Vec (S n) a -> Tensor Z Nil a
-dotProduct a b = let (Vector vs) = zipWith (*) a b in
+dotProduct a b = let (MkVector vs) = zipWith (*) a b in
   foldr1 Tensor.(+) vs
 
 
 -- it would be cool to implement cross product in terms of wedge product
 -- instead of brute forcing it term by term
-
 crossProduct : (Num a) => Vec 3 a -> Vec 3 a -> Vec 3 a
-crossProduct (Vector [a1, a2, a3]) (Vector [b1, b2, b3]) =
-  Vector ([a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - b1*a2])
+crossProduct (MkVector [a1, a2, a3]) (MkVector [b1, b2, b3]) =
+  MkVector ([a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - b1*a2])
 
 
 crossProduct2 : (Num a) => Vec 2 a -> Vec 2 a -> Tensor Z Nil a
-crossProduct2 a b = let Vector [x, y, z] = crossProduct (consT 0 a) (consT 0 b) in z
+crossProduct2 a b = let MkVector [x, y, z] = crossProduct (consT 0 a) (consT 0 b) in z
 
 
-multVec : (Num a) => Matrix (S m) (S n) a -> Vec (S m) a -> Vec (S n) a
-multVec (Vector vs) v = Vector (map (dotProduct v) vs)
+transpose : Matrix a b t -> Matrix b a t
+transpose {b} (MkVector Nil) = MkVector $ replicate b (MkVector Nil)
+transpose (MkVector ((MkVector v)::vs)) = let (MkVector os) = transpose (MkVector vs) in
+  MkVector (zipWith consT v os)
 
 
-multMatrix : (Num a) => Matrix (S m) (S n) a -> Matrix (S n) (S o) a -> Matrix (S m) (S o) a
-multMatrix a (Vector bCols) = Vector $ map (multVec (transpose a)) bCols
+-- multiplies a matrix by a vector
+multVec : (Num a) => Matrix (S m) (S n) a -> Vec (S n) a -> Vec (S m) a
+multVec (MkVector vs) v = MkVector (map (dotProduct v) vs)
+
+
+-- matrix multiplication
+multMatrix : (Num a) => Matrix (S n) (S o) a -> Matrix (S m) (S n) a -> Matrix (S m) (S o) a
+multMatrix a (MkVector bCols) = MkVector $ map (multVec (transpose a)) bCols
 
