@@ -5,6 +5,7 @@ module Tensor
 -- it allows for n-dimensional arrays
 -- this library mostly deals with plain old vectors and matrices
 -- a danger is that this machinery turns out poor for higher-dimensional use cases
+-- and/or cumbersome for low-dimensional use cases
 
 data Tensor : (dim : Nat) -> Vect dim Nat -> Type -> Type where
   MkScalar : a -> Tensor 0 Nil a
