@@ -1,5 +1,4 @@
 import Tensor
-import Tensor2
 
 
 -- looks like a row vector, actually a column vector
