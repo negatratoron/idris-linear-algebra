@@ -20,8 +20,7 @@ crossProduct2 a b = head $ crossProduct (0::a) (0::b)
 
 transpose : Matrix a b t -> Matrix b a t
 transpose {b} Nil = replicate b Nil
-transpose (v::vs) = let os = transpose vs in
- (zipWith (::) v os)
+transpose (v::vs) = zipWith (::) v (transpose vs)
 
 
 -- multiplies a matrix by a vector
