@@ -1,5 +1,6 @@
 module Matrix
 
+%access public
 
 Matrix : Nat -> Nat -> Type -> Type
 Matrix rows cols a = Vect rows (Vect cols a)
@@ -18,11 +19,6 @@ crossProduct2 : (Num a) => Vect 2 a -> Vect 2 a -> a
 crossProduct2 a b = head $ crossProduct (0::a) (0::b)
 
 
-transpose : Matrix a b t -> Matrix b a t
-transpose {b} Nil = replicate b Nil
-transpose (v::vs) = zipWith (::) v (transpose vs)
-
-
 -- multiplies a matrix by a vector
 multVect : (Num a) => Matrix (S m) (S n) a -> Vect (S n) a -> Vect (S m) a
 multVect vs v = map (dotProduct v) vs
@@ -32,3 +28,9 @@ multVect vs v = map (dotProduct v) vs
 multMatrix : (Num a) => Matrix (S n) (S o) a -> Matrix (S m) (S n) a -> Matrix (S m) (S o) a
 multMatrix a (bCols) = map (multVect (transpose a)) bCols
 
+
+identityMatrix : (Num a) => Matrix n n a
+identityMatrix {n = Z}   = []
+identityMatrix {n = S m} = (insertAt 0 one $ replicate m zero) :: (map (insertAt 0 zero) identityMatrix) where
+  zero = fromInteger 0
+  one = fromInteger 1

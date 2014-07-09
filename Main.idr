@@ -23,7 +23,16 @@ vect3 : Vect 4 Int
 vect3 = insertAt 2 6 vect
 
 
+identity1 : Matrix 1 1 Nat
+identity1 = identityMatrix
+
+identity2 : Matrix 2 2 Nat
+identity2 = identityMatrix
+
+
 main : IO ()
 main = do
   putStrLn (show vect2)
   putStrLn (show vect3)
+  putStrLn (show identity1)
+  putStrLn (show identity2)
