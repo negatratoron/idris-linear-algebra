@@ -31,6 +31,6 @@ multMatrix a (bCols) = map (multVect (transpose a)) bCols
 
 identityMatrix : (Num a) => Matrix n n a
 identityMatrix {n = Z}   = []
-identityMatrix {n = S m} = (insertAt 0 one $ replicate m zero) :: (map (insertAt 0 zero) identityMatrix) where
+identityMatrix {n = S m} = (one :: replicate m zero) :: (map (zero ::) identityMatrix) where
   zero = fromInteger 0
   one = fromInteger 1
