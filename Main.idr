@@ -10,7 +10,7 @@ matrix = [[0, 4, 3]
          ,[1, 3, 8]]
 
 vector2 : Vect 2 Int
-vector2 = multVect matrix vector
+vector2 = matrix * vector
 
 
 vect : Vect 3 Int
