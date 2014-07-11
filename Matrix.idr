@@ -32,4 +32,4 @@ identityMatrix : (Num a) => Matrix n n a
 identityMatrix {n = Z}   = []
 identityMatrix {n = S m} = (one :: replicate m zero) :: (map (zero ::) identityMatrix) where
   zero = fromInteger 0
-  one = fromInteger 1
+  one  = fromInteger 1
