@@ -1,9 +1,10 @@
 import Matrix
 
 
--- looks like a row vector, actually a column vector
 vector : Vect 3 Int
-vector = [0, 4, 2]
+vector = [0,
+          4,
+          2]
 
 matrix : Matrix 2 3 Int
 matrix = [[0, 4, 3]
@@ -32,6 +33,7 @@ identity2 = identityMatrix
 
 main : IO ()
 main = do
+  putStrLn (show vector2)
   putStrLn (show vect2)
   putStrLn (show vect3)
   putStrLn (show identity1)
