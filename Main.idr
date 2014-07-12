@@ -6,7 +6,7 @@ vector = [0,
           4,
           2]
 
-matrix : Matrix 2 3 Int
+matrix : Matrix 3 2 Int
 matrix = [[0, 4, 3]
          ,[1, 3, 8]]
 

@@ -3,7 +3,7 @@ module Matrix
 %access public
 
 Matrix : Nat -> Nat -> Type -> Type
-Matrix rows cols a = Vect rows (Vect cols a)
+Matrix cols rows a = Vect rows (Vect cols a)
 
 
 -- some Vect methods
@@ -18,13 +18,13 @@ crossProduct2 a b = head $ crossProduct (0::a) (0::b)
 
 
 -- multiplies a matrix by a vector
-multMatVect : (Num a) => Matrix (S m) (S n) a -> Vect (S n) a -> Vect (S m) a
+multMatVect : (Num a) => Matrix (S m) (S n) a -> Vect (S m) a -> Vect (S n) a
 multMatVect vs v = map (dotProduct v) vs
 
 
 -- multiplies a matrix by a matrix
-multMatMat : (Num a) => Matrix (S n) (S o) a -> Matrix (S m) (S n) a -> Matrix (S m) (S o) a
-multMatMat a (bCols) = map (multMatVect (transpose a)) bCols
+multMatMat : (Num a) => Matrix (S m) (S n) a -> Matrix (S n) (S o) a -> Matrix (S m) (S o) a
+multMatMat a b = map (multMatVect (transpose a)) b
 
 
 -- n-by-n identity matrix
