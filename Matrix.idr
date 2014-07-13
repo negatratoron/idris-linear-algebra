@@ -1,5 +1,7 @@
 module Matrix
 
+import Data.Floats
+
 %access public
 
 Matrix : Nat -> Nat -> Type -> Type
@@ -15,6 +17,14 @@ crossProduct [a1, a2, a3] [b1, b2, b3] = [a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - 
 
 crossProduct2 : (Num a) => Vect 2 a -> Vect 2 a -> a
 crossProduct2 a b = head $ crossProduct (0::a) (0::b)
+
+
+-- some Vect Float methods
+magnitude : Vect (S n) Float -> Float
+magnitude v = sqrt $ dotProduct v v
+
+distance : Vect (S n) Float -> Vect (S n) Float -> Float
+distance a b = magnitude [| Classes.(-) a b |]
 
 
 -- multiplies a matrix by a vector
