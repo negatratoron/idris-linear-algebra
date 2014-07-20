@@ -11,7 +11,7 @@ matrix = [[0, 4, 3]
          ,[1, 3, 8]]
 
 vector2 : Vect 2 Int
-vector2 = multMatVect matrix vector
+vector2 = multVect matrix vector
 
 
 vect : Vect 3 Int

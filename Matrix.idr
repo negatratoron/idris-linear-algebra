@@ -1,45 +1,27 @@
-module Matrix
+module LinAlg.Matrix
 
-import Data.Floats
+import Vect
 
 %access public
+%default total
 
+
+||| A Matrix is a Vect of Vects
 Matrix : Nat -> Nat -> Type -> Type
 Matrix cols rows a = Vect rows (Vect cols a)
 
+||| Multiply a Matrix by a Vector
+multVect : (Num a) => Matrix (S m) (S n) a -> Vect (S m) a -> Vect (S n) a
+multVect vs v = map (dotProduct v) vs
 
--- some Vect methods
-dotProduct : (Num a) => Vect (S n) a -> Vect (S n) a -> a
-dotProduct a b = foldr1 (+) $ zipWith (*) a b
+||| Multiply a Matrix by a Matrix
+multMat : (Num a) => Matrix (S m) (S n) a -> Matrix (S n) (S o) a -> Matrix (S m) (S o) a
+multMat a b = map (multVect (transpose a)) b
 
-crossProduct : (Num a) => Vect 3 a -> Vect 3 a -> Vect 3 a
-crossProduct [a1, a2, a3] [b1, b2, b3] = [a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - b1*a2]
-
-crossProduct2 : (Num a) => Vect 2 a -> Vect 2 a -> a
-crossProduct2 a b = head $ crossProduct (0::a) (0::b)
-
-
--- some Vect Float methods
-magnitude : Vect (S n) Float -> Float
-magnitude v = sqrt $ dotProduct v v
-
-distance : Vect (S n) Float -> Vect (S n) Float -> Float
-distance a b = magnitude [| Classes.(-) a b |]
-
-
--- multiplies a matrix by a vector
-multMatVect : (Num a) => Matrix (S m) (S n) a -> Vect (S m) a -> Vect (S n) a
-multMatVect vs v = map (dotProduct v) vs
-
-
--- multiplies a matrix by a matrix
-multMatMat : (Num a) => Matrix (S m) (S n) a -> Matrix (S n) (S o) a -> Matrix (S m) (S o) a
-multMatMat a b = map (multMatVect (transpose a)) b
-
-
--- n-by-n identity matrix
+||| Identity matrix
 identityMatrix : (Num a) => Matrix n n a
 identityMatrix {n = Z}   = []
 identityMatrix {n = S m} = (one :: replicate m zero) :: (map (zero ::) identityMatrix) where
   zero = fromInteger 0
   one  = fromInteger 1
+
